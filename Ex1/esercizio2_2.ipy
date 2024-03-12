@@ -1,0 +1,19 @@
+%matplotlib qt
+
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.ndimage as ndi
+import skimage.io as io
+
+redFile = io.imread('../Images/Washington_red.tif')
+greenFile = io.imread('../Images/Washington_green.tif')
+blueFile = io.imread('../Images/Washington_blue.tif')
+infraredFile = io.imread('../Images/Washington_infrared.tif')
+
+rgbImage = np.stack([redFile[:,:], greenFile[:,:], blueFile[:, :]], -1)
+plt.figure(1)
+plt.imshow(rgbImage)
+
+rgbImage = np.stack([infraredFile[:,:], greenFile[:,:], blueFile[:, :]], -1)
+plt.figure(2)
+plt.imshow(rgbImage)

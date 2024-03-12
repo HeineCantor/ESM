@@ -1,0 +1,48 @@
+%matplotlib qt
+
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.ndimage as ndi
+import skimage.io as io
+
+def vediJPG(filePath):
+    x = io.imread(filePath)
+    imShape = x.shape
+    (M, N) = x.shape[0], x.shape[1]
+    
+    if(len(imShape) < 3): # grey-scale image
+        plt.figure(1);
+        plt.imshow(x, clim=[0,255], cmap='gray');
+    else:   # multi-channel image
+        R = x[:,:,0]
+        G = x[:,:,1]
+        B = x[:,:,2]
+        
+        
+        y = np.stack([R, G, B], -1)
+        plt.figure(1)
+        plt.imshow(y)
+        
+        fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+        ax1.imshow(R, clim=[0, 255], cmap='gray')
+        ax1.set_title("Red")
+        ax2.imshow(G, clim=[0, 255], cmap='gray')
+        ax2.set_title("Green")
+        ax3.imshow(B, clim=[0, 255], cmap='gray')
+        ax3.set_title("Blue")
+        
+        
+
+def vediRAW(filePath, nRows, nCols, imageType):
+    x = np.fromfile(filePath, np.uint8)
+    x = np.reshape(x, (nRows, nCols))
+    
+    plt.figure(2);
+    plt.imshow(x, clim=[0,255], cmap='gray');
+
+FILE_PATH_JPG = "../Images/parro.jpg"
+vediJPG(FILE_PATH_JPG)
+
+#FILE_PATH_RAW = "../Images/lena.y"
+#vediRAW(FILE_PATH_RAW, 512, 512, None)
+
