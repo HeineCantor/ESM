@@ -10,10 +10,10 @@ greenFile = io.imread('../Images/Washington_green.tif')
 blueFile = io.imread('../Images/Washington_blue.tif')
 infraredFile = io.imread('../Images/Washington_infrared.tif')
 
+fig, (ax1, ax2) = plt.subplots(1, 2)
+
 rgbImage = np.stack([redFile[:,:], greenFile[:,:], blueFile[:, :]], -1)
-plt.figure(1)
-plt.imshow(rgbImage)
+ax1.imshow(rgbImage)
 
 rgbImage = np.stack([infraredFile[:,:], greenFile[:,:], blueFile[:, :]], -1)
-plt.figure(2)
-plt.imshow(rgbImage)
+ax2.imshow(rgbImage)
