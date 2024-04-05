@@ -1,0 +1,20 @@
+%matplotlib qt
+
+import skimage.io as io
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.ndimage as ndi
+
+originalImage = np.float64(io.imread("../Images/test.jpg"))
+M, N = originalImage.shape
+
+mask1 = np.array([[0, 0, 0], [0, 1, -1], [0, 0, 0]])
+mask2 = np.array([[0, 0, 0], [-1, 1, 0], [0, 0, 0]])
+
+y1 = ndi.correlate(originalImage, mask1)
+y2 = ndi.correlate(originalImage, mask2)
+
+fig, (ax0, ax1) = plt.subplots(1, 2)
+
+ax0.imshow(y1, clim=None, cmap='gray')
+ax1.imshow(y2, clim=None, cmap='gray')

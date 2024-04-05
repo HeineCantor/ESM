@@ -1,0 +1,23 @@
+%matplotlib qt
+
+import skimage.io as io
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.ndimage as ndi
+
+originalImage = np.float64(io.imread("../Images/space.jpg"))
+
+fig, (ax0, ax1, ax2) = plt.subplots(1, 3)
+ax0.imshow(originalImage, clim=None, cmap='gray')
+ax0.set_title("Original image")
+
+smoothedImage = ndi.uniform_filter(originalImage, size=15)
+ax1.imshow(smoothedImage, clim=None, cmap='gray')
+ax0.set_title("Smoothed image")
+
+thresholdValue = np.max(smoothedImage) * 0.25
+mask = smoothedImage >= thresholdValue
+thresholded = originalImage * mask
+
+ax2.imshow(thresholded, clim=None, cmap='gray')
+ax2.set_title("Final image")

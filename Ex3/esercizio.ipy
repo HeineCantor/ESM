@@ -1,0 +1,22 @@
+%matplotlib qt
+
+import skimage.io as io
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.ndimage as ndi
+
+def smoothing(image, coefficient):
+    mask = np.ones((coefficient, coefficient)) / (coefficient**2)
+    return ndi.correlate(image, mask, mode='reflect')
+
+x = np.float64(io.imread('../Images/test.jpg'))
+
+fig, (ax0, ax1, ax2) = plt.subplots(1, 3)
+ax0.imshow(x, clim=None, cmap='gray')
+ax0.set_title("Original image")
+
+ax1.imshow(smoothing(x, 3), clim=None, cmap='gray')
+ax1.set_title("Smoothing (k=3)")
+
+ax2.imshow(ndi.gaussian_filter(x, sigma=1), clim=None, cmap='gray')
+ax2.set_title("Gaussian filter")
