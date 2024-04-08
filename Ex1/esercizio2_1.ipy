@@ -12,7 +12,7 @@ def vediJPG(filePath):
     
     if(len(imShape) < 3): # grey-scale image
         plt.figure(1);
-        plt.imshow(x, clim=[0,255], cmap='gray');
+        plt.imshow(x, clim=[0,255], cmap='gray')
     else:   # multi-channel image
         R = x[:,:,0]
         G = x[:,:,1]
