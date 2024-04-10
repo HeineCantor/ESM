@@ -3,8 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.ndimage as ndi
 
-from skimage.filters import correlate_sparse
-
 EPSILON = 2**(-60)
 B = 10
 
