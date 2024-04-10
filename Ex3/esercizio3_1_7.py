@@ -3,62 +3,23 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.ndimage as ndi
 
-m1 = np.array(
-    [
-        [  0,  0,  0,  0,  0,  0,  0],
-        [  0,  0,  0,  0,  0,  0,  0],
-        [  0,  0,  0,  0,  0,  0,  0],
-        [  1,  1,  1,  1,  1,  1,  1],
-        [  0,  0,  0,  0,  0,  0,  0],
-        [  0,  0,  0,  0,  0,  0,  0],
-        [  0,  0,  0,  0,  0,  0,  0],
-    ]
-)
+def meanDifference(input, mask):
+    input = input.reshape((MASK_SIZE, MASK_SIZE))
 
-antim1 = np.ones((7, 7)) - m1
+    whiteInput = input*mask
+    blackInput = input*(1-mask)
 
-m2 = np.array(
-    [
-        [  0,  0,  0,  1,  0,  0,  0],
-        [  0,  0,  0,  1,  0,  0,  0],
-        [  0,  0,  0,  1,  0,  0,  0],
-        [  0,  0,  0,  1,  0,  0,  0],
-        [  0,  0,  0,  1,  0,  0,  0],
-        [  0,  0,  0,  1,  0,  0,  0],
-        [  0,  0,  0,  1,  0,  0,  0],
-    ]
-)
+    return np.mean(whiteInput) - np.mean(blackInput)
 
-m3 = np.array(
-    [
-        [  1,  0,  0,  0,  0,  0,  0],
-        [  0,  1,  0,  0,  0,  0,  0],
-        [  0,  0,  1,  0,  0,  0,  0],
-        [  0,  0,  0,  1,  0,  0,  0],
-        [  0,  0,  0,  0,  1,  0,  0],
-        [  0,  0,  0,  0,  0,  1,  0],
-        [  0,  0,  0,  0,  0,  0,  1],
-    ]
-)
+MASK_SIZE = 7
 
-m4 = np.array(
-    [
-        [  0,  0,  0,  0,  0,  0,  1],
-        [  0,  0,  0,  0,  0,  1,  0],
-        [  0,  0,  0,  0,  1,  0,  0],
-        [  0,  0,  0,  1,  0,  0,  0],
-        [  0,  0,  1,  0,  0,  0,  0],
-        [  0,  1,  0,  0,  0,  0,  0],
-        [  1,  0,  0,  0,  0,  0,  0],
-    ]
-)
+mask1 = np.zeros((MASK_SIZE, MASK_SIZE))
+mask1[MASK_SIZE//2] = 1
 
-def meanDifferenceM1(input):
-    reshaped = np.reshape(input, (7, 7))
-    whiteMean = np.mean(reshaped * m1)
-    blackMean = np.mean(reshaped * antim1)
+mask2 = mask1.T
 
-    return whiteMean-blackMean
+mask3 = np.diag(np.ones(MASK_SIZE), k=0)
+mask4 = mask3[:,::-1]
 
 x = io.imread('./Images/retina.tif')
 
@@ -66,9 +27,20 @@ R = x[:,:,0]
 G = x[:,:,1]
 B = x[:,:,2]
 
-filteredG = ndi.generic_filter(G, meanDifferenceM1, (7, 7))
+stackedImage = np.stack([R, G, B], -1)
 
-totalImage = np.stack([R, filteredG, B], -1)
-plt.subplot(2,2,1); plt.imshow(totalImage)
+plt.subplot(1, 2, 1); plt.imshow(stackedImage)
 
+maskImage1 = ndi.generic_filter(G, meanDifference, (MASK_SIZE, MASK_SIZE), extra_arguments=tuple([mask1]))
+maskImage2 = ndi.generic_filter(G, meanDifference, (MASK_SIZE, MASK_SIZE), extra_arguments=tuple([mask2]))
+maskImage3 = ndi.generic_filter(G, meanDifference, (MASK_SIZE, MASK_SIZE), extra_arguments=tuple([mask3]))
+maskImage4 = ndi.generic_filter(G, meanDifference, (MASK_SIZE, MASK_SIZE), extra_arguments=tuple([mask4]))
+
+imageStack = np.stack([maskImage1, maskImage2, maskImage3, maskImage4], -1)
+minImage = np.min(imageStack, axis=-1)
+
+thresholdMap = minImage > -5
+minImage *= thresholdMap
+
+plt.subplot(1, 2, 2); plt.imshow(minImage, clim=None, cmap='gray')
 plt.show()
