@@ -11,7 +11,8 @@ GAUSSIAN_VARIANCE_STEP = 5
 
 def adaptiveFilter(inputImage):
     localMean = np.mean(inputImage)
-    localVariance = np.sum((inputImage - localMean)**2)/(inputImage.shape[0])
+    localVariance = np.var(inputImage)
+
     middlePixel = inputImage[inputImage.shape[0]//2]
     return middlePixel - (gaussianVariance/localVariance)*(middlePixel-localMean)
 
@@ -43,5 +44,7 @@ for i in range(1, 11):
 
 plt.plot(xAxis, yAxisAdaptive, label="Adaptive Filter")
 plt.plot(xAxis, yAxisUniform, label="Uniform Filter")
+
+plt.legend()
 
 plt.show()
