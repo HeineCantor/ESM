@@ -3,41 +3,35 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 originalImage = np.float64(io.imread('./Images/volto.tif'))
-plt.subplot(2, 3, 1); plt.imshow(originalImage, clim=None, cmap='gray')
+transformedImage = np.fft.fftshift(np.fft.fft2(originalImage))
 
-fft = np.fft.fftshift(np.fft.fft2(originalImage))
+magnitude = np.abs(transformedImage)
+enhancedMagnitude = np.log(1 + magnitude)
 
-ampiezza = np.abs(fft)
-fase = np.angle(fft)
+phase = np.angle(transformedImage)
 
-ampiezzaLog = np.log(1+ampiezza)
+plt.subplot(2, 3, 1); plt.imshow(originalImage, clim=None, cmap='gray'); plt.title('Original Image')
+plt.subplot(2, 3, 2); plt.imshow(enhancedMagnitude, clim=None, cmap='gray'); plt.title('Enhanced Magnitude')
+plt.subplot(2, 3, 3); plt.imshow(phase, clim=None, cmap='gray'); plt.title('Phase')
 
-plt.subplot(2, 3, 2); plt.imshow(ampiezzaLog, clim=None, cmap='gray')
+reconstructedMagnitude = np.fft.ifft2(np.fft.ifftshift(magnitude))
+reconstructedPhase = np.fft.ifft2(np.fft.ifftshift(np.exp(1j * phase)))
 
-fase = np.angle(fft)
-
-plt.subplot(2, 3, 3); plt.imshow(fase, clim=None, cmap='gray')
-
-fftWithoutPhase = fft/np.e**(np.angle(fft))
-inverseNoPhase = np.real(np.fft.ifft2(np.fft.ifftshift(fftWithoutPhase)))
-
-fftWithoutAmplitude = fft/np.abs(fft)
-inverseNoAmplitude = np.real(np.fft.ifft2(np.fft.ifftshift(fftWithoutAmplitude)))
-
-plt.subplot(2, 3, 5); plt.imshow(inverseNoAmplitude, clim=None, cmap='gray')
-plt.subplot(2, 3, 6); plt.imshow(inverseNoPhase, clim=None, cmap='gray')
-
-rectangle = np.float64(io.imread('./Images/rettangolo.jpg'))
-
-fftRettangolo = np.fft.fftshift(np.fft.fft2(rectangle))
-
-ampiezzaRettangolo = np.abs(fftRettangolo)
-faseRettangolo = np.angle(fftRettangolo)
-
-ampiezzaRettangoloLog = np.log(1+ampiezzaRettangolo)
-
-plt.subplot(2, 2, 1); plt.imshow(ampiezzaRettangoloLog, clim=None, cmap='gray', extent=(-0.5, +0.5))
+plt.subplot(2, 3, 4); plt.imshow(np.abs(reconstructedMagnitude), clim=None, cmap='gray'); plt.title('Reconstructed Magnitude')
+plt.subplot(2, 3, 5); plt.imshow(np.abs(reconstructedPhase), clim=None, cmap='gray'); plt.title('Reconstructed Phase')
 
 plt.figure()
+
+rettangoloImage = np.float64(io.imread('./Images/rettangolo.jpg'))
+transformedRettangolo = np.fft.fftshift(np.fft.fft2(rettangoloImage))
+
+magnitudeRettangolo = np.abs(transformedRettangolo)
+phaseRettangolo = np.angle(transformedRettangolo)
+
+reconstructedPhaseRettangolo = np.fft.ifft2(np.fft.ifftshift(magnitude*np.exp(1j * phaseRettangolo)))
+reconstructedMagnitudeRettangolo = np.fft.ifft2(np.fft.ifftshift(magnitudeRettangolo*np.exp(1j * phase)))
+
+plt.subplot(1, 2, 1); plt.imshow(np.abs(reconstructedMagnitudeRettangolo), clim=None, cmap='gray'); plt.title('Rectangle Magnitude + Phase')
+plt.subplot(1, 2, 2); plt.imshow(np.abs(reconstructedPhaseRettangolo), clim=None, cmap='gray'); plt.title('Magnitude + Rectangle Phase')
 
 plt.show()
