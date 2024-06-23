@@ -8,45 +8,6 @@ from skimage.data import checkerboard
 def rot_shear(image, theta, c):
     M, N = image.shape
 
-    # A1 = np.array(
-    #     [
-    #         [1, 0, N/2],
-    #         [0, 1, M/2],
-    #         [0, 0, 1]
-    #     ]
-    #     , dtype=np.float64
-    # )
-
-    # A2 = np.array(
-    #     [
-    #         [1, c, 0],
-    #         [0, 1, 0],
-    #         [0, 0, 1]
-    #     ]
-    #     , dtype=np.float64
-    # )
-
-    # A3 = np.array(
-    #     [
-    #         [np.cos(theta), -np.sin(theta), 0],
-    #         [np.sin(theta), np.cos(theta), 0],
-    #         [0, 0, 1]
-    #     ]
-    #     , dtype=np.float64
-    # )
-
-    # A4 = np.array(
-    #     [
-    #         [1, 0, -N/2],
-    #         [0, 1, -M/2],
-    #         [0, 0, 1]
-
-    #     ]   
-    #     , dtype=np.float64
-    # )
-
-    # A = A1 @ A2 @ A3 @ A4
-
     T1 = np.array([[1, 0, 0], [0, 1, 0], [M/2, N/2, 1]], dtype=np.float64)
     T2 = np.array([[np.cos(theta), np.sin(theta), 0], [-np.sin(theta), np.cos(theta), 0], [0, 0, 1]], dtype=np.float64)
     T3 = np.array([[1, 0, 0], [c, 1, 0], [0, 0, 1]], dtype=np.float64)
