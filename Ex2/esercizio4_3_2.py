@@ -7,34 +7,35 @@ from skimage.transform import warp
 def centralRotation(image, theta):
     M, N = image.shape
     
-    A1 = np.array(
+    T1 = np.array(
         [
-            [1, 0, N/2],
-            [0, 1, M/2],
+            [1, 0, 0],
+            [0, 1, 0],
+            [N/2, M/2, 1]
+        ]
+        , dtype=np.float64
+    )
+
+    T2 = np.array(
+        [
+            [np.cos(theta), np.sin(theta), 0],
+            [-np.sin(theta), np.cos(theta), 0],
             [0, 0, 1]
         ]
         , dtype=np.float64
     )
 
-    A2 = np.array(
+    T3 = np.array(
         [
-            [np.cos(theta), -np.sin(theta), 0],
-            [np.sin(theta), np.cos(theta), 0],
-            [0, 0, 1]
+            [1, 0, 0],
+            [0, 1, 0],
+            [-N/2, -M/2, 1]
         ]
         , dtype=np.float64
     )
 
-    A3 = np.array(
-        [
-            [1, 0, -N/2],
-            [0, 1, -M/2],
-            [0, 0, 1]
-        ]
-        , dtype=np.float64
-    )
-
-    A = A1 @ A2 @ A3
+    T = T3 @ T2 @ T1
+    A = T[[1, 0, 2],:][:, [1, 0, 2]].T
     
     return warp(image, A, order=0, output_shape=(M, N))
 
